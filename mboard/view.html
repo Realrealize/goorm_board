@@ -1,0 +1,101 @@
+<?php
+  include "config.php";
+  include "dbconfig.php";
+
+  $idx = (isset($_GET['idx']) && $_GET['idx'] != '' && is_numeric($_GET['idx'])) ? $_GET['idx'] : '';
+
+  if ($idx == ''){
+    exit('비정상적인 접근을 허용하지 않습니다.');
+    //die('비정상적인 접근을 허용하지 않습니다.');
+    //echo('비정상적인 접근을 허용하지 않습니다.');
+    //die;
+  }
+
+  $sql = "UPDATE mboard SET hit=hit+1 WHERE idx=:idx";
+  $stmt = $conn->prepare($sql);
+  $stmt->bindParam(':idx', $idx);
+  $stmt->execute();
+
+  $sql = "SELECT * FROM mboard WHERE idx=:idx";
+  $stmt = $conn->prepare($sql);
+  $stmt->bindParam(':idx', $idx);
+  $stmt->setFetchMode(PDO::FETCH_ASSOC);
+  $stmt->execute();
+
+  $row = $stmt->fetch();
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><?=$board_title ?></title>
+  <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+</head>
+<body>
+  <!-- 범위내에서 50%출력 -->
+  <div class="container mt-3 w-50">
+    <h1 class="h1"><?=$board_title ?></h1>
+  </div>
+  <div class="container my-3 border border-1 w-50 vstack">
+    <div class="p-3">
+      <span class="h3 fw-bolder"><?= $row['subject']; ?> </span>
+    </div>
+    <div class="d-flex px-3 border border-top-0 border-start-0 border-end-0 border-bottom-1">
+      <span><?= $row['name']; ?></span>
+      <span class="ms-5 me-auto"><?= $row['hit']; ?>회</span>
+      <span><?= $row['rdate']; ?></span>
+      
+    </div>
+    <div class="p-3">
+      <?= $row['content']; ?>
+    </div>
+    <div class="d-flex gap-2 p-3">
+      <button class="btn btn-secondary me-auto" id="btn_list">목록</button>
+      <button class="btn btn-primary">수정</button>
+      <button class="btn btn-danger">삭제</button>
+    </div>
+    
+  </div>
+
+  <script>
+
+
+    const btn_list = document.querySelector("#btn_list")
+    btn_list.addEventListener("click", () => {
+
+      //?idx=4&code=freeboard
+      //idx=4&code=freeboard
+      //idx=4 code=freeboard &기준으로 잘라줌 
+      //['idx', '4', 'code', 'freeboard'] 형태로 받아짐
+      const splited = window.location.search.replace("?","").split(/[=?&]/);
+      let param = {}
+      for (let i = 0; i< splited.length; i++){
+        //key, value 쌍 구조로 받음 
+        param[splited[i]] = splited[++i] // 0번째 param["idx"] = "7"
+                                         // 2번쨰 param["code"] = "freeboard"
+        //{idx: '4', code: 'freeboard'}
+      }
+     
+
+      self.location.href='./list.html?code=' + param["code"];
+      // self.location.href='./list.html?code=<?= $_GET['code']; ?>'
+    })
+  </script>
+
+  
+  
+</body>
+</html>
