@@ -1,2 +1,3 @@
 # goorm_board
-base64 인코딩 되서 넘어온 값을 이미지로 바꾼다던가 이런 부분 처리
+
+![image](https://github.com/Realrealize/goorm_board/assets/75353601/59d755dd-af4d-4f2d-80ae-4801a44b9e3f)
